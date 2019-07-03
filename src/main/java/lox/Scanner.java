@@ -32,7 +32,7 @@ public class Scanner {
      *
      * @return A list of tokens
      */
-    List<Token> scanTokens() {
+    public List<Token> scanTokens() {
         while (!isAtEnd()) {
             start = current;
             scanToken();
@@ -79,13 +79,43 @@ public class Scanner {
             case '*':
                 addToken(STAR);
                 break;
+            case '!':
+                addToken(match('=') ? BANG_EQUAL : BANG);
+                break;
+            case '=':
+                addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+                break;
+            case '<':
+                addToken(match('=') ? LESS_EQUAL : LESS);
+                break;
+            case '>':
+                addToken(match('=') ? GREATER_EQUAL : GREATER);
+                break;
+
+            // For Comments
+            // Note that comments are not added as tokens
+            case '/':
+                if (match('=')) while (peek() != '\n' && !isAtEnd()) advance();
+                else addToken(SLASH);
+                break;
+
+            // Ignored characters
+            case ' ':
+            case '\r':
+            case '\t':
+                break;
+
+            case '\n':
+                line++;
+                break;
+
             default:
-                Lox.error(line, "Unrecognized character");
+                Lox.error(line, "Unrecognized character: " + c);
         }
     }
 
     /**
-     * Increment the current "pointer" and return the next character
+     * Increment the current "pointer" and return the character that was just passed over
      *
      * @return The next character in the source
      */
@@ -112,6 +142,31 @@ public class Scanner {
      */
     private void addToken(TokenType type) {
         addToken(type, null);
+    }
+
+    /**
+     * If the current character matches the expected, move on to the next character and return true
+     * else return false
+     *
+     * @param expected The expected character
+     * @return True if current character matches expected character
+     */
+    private boolean match(char expected) {
+        if (isAtEnd()) return false;
+        if (source.charAt(current) != expected) return false;
+        current++;
+        return true;
+
+    }
+
+    /**
+     * Return the current character without "consuming it" (advance())
+     *
+     * @return
+     */
+    private char peek() {
+        if (isAtEnd()) return '\0';
+        return source.charAt(current);
     }
 
 

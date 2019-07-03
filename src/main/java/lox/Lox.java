@@ -6,12 +6,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Scanner;
 
 public class Lox {
     static boolean hasError;
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         hasError = false;
         if (args.length > 1){
             System.out.println("USAGE: Lox <script>");
@@ -42,7 +41,7 @@ public class Lox {
 
     private static void run(String src){
         Scanner scanner = new Scanner(src);
-        scanner.tokens().forEach(System.out::println);
+        scanner.scanTokens().forEach(System.out::println);
     }
 
     static void error(int line, String msg){
@@ -62,7 +61,7 @@ public class Lox {
         BufferedReader reader = new BufferedReader(inputStreamReader);
 
         for(;;){
-            System.out.print("> ");
+            System.out.println("\nLox REPL ready:");
             run(reader.readLine());
             hasError = false;
 
